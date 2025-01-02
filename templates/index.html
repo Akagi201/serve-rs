@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Index of {{ current_path }}</title>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4"></div>
+        <h1 class="text-2xl font-bold mb-4">Index of {{ current_path }}</h1>
+
+        {% if parent_path.len() != 0 %}
+        <p class="mb-2"><a href="{{ parent_path|urlencode }}" class="text-blue-500 hover:underline">..</a></p>
+        {% endif %}
+
+        {% if entries.len() != 0 %}
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold mb-2">Directories</h2>
+            <ul class="list-disc list-inside">
+                {% for entry in entries if entry.is_dir %}
+                <li><a href="{{ current_path|urlencode }}{{ entry.name|urlencode }}" class="text-blue-500 hover:underline">{{ entry.name }}/</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold mb-2">Files</h2>
+            <ul class="list-disc list-inside">
+                {% for entry in entries if !entry.is_dir %}
+                <li><a href="{{ current_path|urlencode }}{{ entry.name|urlencode }}" class="text-blue-500 hover:underline">{{ entry.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
