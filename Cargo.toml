@@ -5,15 +5,15 @@ edition = "2021"
 
 [dependencies]
 axum = "0.8.1"
-clap = { version = "4.5.23", features = ["derive"] }
+clap = { version = "4.5.32", features = ["derive"] }
 eyre = "0.6.12"
 percent-encoding = "2.3.1"
 rinja = "0.3.5"
-shadow-rs = "0.37.0"
-tokio = { version = "1.42.0", features = ["full"] }
+shadow-rs = "1.0.1"
+tokio = { version = "1.44.1", features = ["full"] }
 tower-http = { version = "0.6.2", features = ["fs", "trace"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 
 [build-dependencies]
-shadow-rs = "0.37.0"
+shadow-rs = "1.0.1"
