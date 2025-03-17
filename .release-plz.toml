@@ -1,9 +1,8 @@
 [workspace]
+changelog_path = "./CHANGELOG.md"
 publish = false
-publish_no_verify = true
 changelog_config = ".cliff.toml"
 changelog_update = true
 dependencies_update = false
 pr_labels = ["release"]
-git_tag_enable = false
 semver_check = false
