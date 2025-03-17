@@ -1,8 +1,10 @@
 [workspace]
-changelog_path = "./CHANGELOG.md"
 publish = false
 changelog_config = "cliff.toml"
 changelog_update = true
 dependencies_update = false
-pr_labels = ["release"]
 semver_check = false
+
+[[package]]
+name = "serve"
+changelog_path = "./CHANGELOG.md"
