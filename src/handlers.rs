@@ -1,23 +1,25 @@
 use std::{fs, path::PathBuf, time::SystemTime};
 
+use askama::Template;
 use axum::{
   body::Body,
   extract::{Path, State},
-  http::StatusCode,
+  http::{HeaderMap, StatusCode, header},
   response::{Html, IntoResponse, Response},
 };
 use percent_encoding::percent_decode;
-use rinja::Template;
 use tracing::{error, info};
 
 #[derive(Template)]
-#[template(path = "directory_listing.html", print = "code")]
+#[template(path = "index.html")]
+#[allow(dead_code)]
 struct DirListTemplate {
   current_path: String,
   parent_path: String,
   entries: Vec<DirEntry>,
 }
 
+#[allow(dead_code)]
 struct DirEntry {
   name: String,
   is_dir: bool,
@@ -43,6 +45,70 @@ pub struct AppState {
 
 pub async fn render_index_root(State(state): State<AppState>) -> impl IntoResponse {
   render_index_internal(state, "".to_string()).await
+}
+
+pub async fn serve_file(
+  State(state): State<AppState>,
+  Path(path): Path<String>,
+) -> impl IntoResponse {
+  let base_path = &state.root_dir;
+  let decoded_path = match percent_decode(path.as_ref()).decode_utf8() {
+    Ok(path) => path.to_string(),
+    Err(_) => return (StatusCode::BAD_REQUEST, "Invalid path encoding").into_response(),
+  };
+
+  let target_path = base_path.join(&decoded_path);
+
+  // Security check
+  if !target_path.starts_with(base_path) {
+    return (StatusCode::FORBIDDEN, "Access denied").into_response();
+  }
+
+  // Check if file exists and is a file
+  if !target_path.exists() || !target_path.is_file() {
+    return (StatusCode::NOT_FOUND, "File not found").into_response();
+  }
+
+  // Read file content
+  let content = match std::fs::read(&target_path) {
+    Ok(content) => content,
+    Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to read file").into_response(),
+  };
+
+  // Get filename for Content-Disposition header
+  let filename = target_path.file_name().and_then(|name| name.to_str()).unwrap_or("download");
+
+  // Create headers
+  let mut headers = HeaderMap::new();
+  headers.insert(
+    header::CONTENT_DISPOSITION,
+    format!("attachment; filename=\"{filename}\"")
+      .parse()
+      .expect("Valid content disposition header"),
+  );
+
+  // Determine content type based on file extension
+  let content_type = match target_path.extension().and_then(|ext| ext.to_str()) {
+    Some("txt") => "text/plain",
+    Some("html") => "text/html",
+    Some("css") => "text/css",
+    Some("js") => "application/javascript",
+    Some("json") => "application/json",
+    Some("pdf") => "application/pdf",
+    Some("png") => "image/png",
+    Some("jpg") | Some("jpeg") => "image/jpeg",
+    Some("gif") => "image/gif",
+    Some("svg") => "image/svg+xml",
+    Some("zip") => "application/zip",
+    Some("tar") => "application/x-tar",
+    Some("gz") => "application/gzip",
+    Some("rar") => "application/x-rar-compressed",
+    _ => "application/octet-stream",
+  };
+
+  headers.insert(header::CONTENT_TYPE, content_type.parse().expect("Valid content type header"));
+
+  (headers, content).into_response()
 }
 
 pub async fn handle_directory_or_fallback(

@@ -1,110 +1,330 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index of {{ current_path }}</title>
     
-    <!-- BasecoatUI CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.2.8/dist/basecoat.cdn.min.css">
+    <!-- BasecoatUI 0.2.8 -->
+    <link href="https://cdn.jsdelivr.net/npm/@basecoat/core@0.2.8/dist/basecoat.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@basecoat/core@0.2.8/dist/basecoat.min.js"></script>
     
     <style>
-        /* Custom theme variables */
+        /* Apple-inspired design system */
         :root {
-            --background: 0 0% 100%;
-            --foreground: 222.2 84% 4.9%;
-            --card: 0 0% 100%;
-            --card-foreground: 222.2 84% 4.9%;
-            --popover: 0 0% 100%;
-            --popover-foreground: 222.2 84% 4.9%;
-            --primary: 222.2 47.4% 11.2%;
-            --primary-foreground: 210 40% 98%;
-            --secondary: 210 40% 96%;
-            --secondary-foreground: 222.2 84% 4.9%;
-            --muted: 210 40% 96%;
-            --muted-foreground: 215.4 16.3% 46.9%;
-            --accent: 210 40% 96%;
-            --accent-foreground: 222.2 84% 4.9%;
-            --destructive: 0 84.2% 60.2%;
-            --destructive-foreground: 210 40% 98%;
-            --border: 214.3 31.8% 91.4%;
-            --input: 214.3 31.8% 91.4%;
-            --ring: 222.2 84% 4.9%;
-            --radius: 0.5rem;
+            --apple-blue: #007AFF;
+            --apple-gray: #8E8E93;
+            --apple-light-gray: #F2F2F7;
+            --apple-dark-gray: #1C1C1E;
+            --apple-background: #FFFFFF;
+            --apple-surface: #FFFFFF;
+            --apple-border: rgba(0, 0, 0, 0.1);
+            --apple-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --apple-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.15);
+            --apple-radius: 12px;
+            --apple-radius-large: 16px;
+            --apple-text-primary: #000000;
+            --apple-text-secondary: #8E8E93;
         }
-
-        .dark {
-            --background: 222.2 84% 4.9%;
-            --foreground: 210 40% 98%;
-            --card: 222.2 84% 4.9%;
-            --card-foreground: 210 40% 98%;
-            --popover: 222.2 84% 4.9%;
-            --popover-foreground: 210 40% 98%;
-            --primary: 210 40% 98%;
-            --primary-foreground: 222.2 47.4% 11.2%;
-            --secondary: 217.2 32.6% 17.5%;
-            --secondary-foreground: 210 40% 98%;
-            --muted: 217.2 32.6% 17.5%;
-            --muted-foreground: 215 20.2% 65.1%;
-            --accent: 217.2 32.6% 17.5%;
-            --accent-foreground: 210 40% 98%;
-            --destructive: 0 62.8% 30.6%;
-            --destructive-foreground: 210 40% 98%;
-            --border: 217.2 32.6% 17.5%;
-            --input: 217.2 32.6% 17.5%;
-            --ring: 212.7 26.8% 83.9%;
+        
+        [data-theme="dark"] {
+            --apple-background: #000000;
+            --apple-surface: #1C1C1E;
+            --apple-border: rgba(255, 255, 255, 0.1);
+            --apple-light-gray: #2C2C2E;
+            --apple-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            --apple-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --apple-text-primary: #FFFFFF;
+            --apple-text-secondary: #8E8E93;
         }
-
-        /* File type icons */
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--apple-background);
+            color: var(--apple-text-primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* File icons */
         .file-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            margin-right: 12px;
+            transition: transform 0.2s ease;
+        }
+        
+        /* Apple-style cards with rounded corners */
+        .card {
+            background: var(--apple-surface);
+            border: 1px solid var(--apple-border);
+            border-radius: var(--apple-radius-large);
+            box-shadow: var(--apple-shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: var(--apple-shadow-hover);
+            transform: translateY(-2px);
+        }
+        
+        /* File entries */
+        .file-entry {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--apple-border);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .file-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .file-entry:hover {
+            background: var(--apple-light-gray);
+            transform: translateX(4px);
+        }
+        
+        .file-entry:hover .file-icon {
+            transform: scale(1.1);
+        }
+        
+        .file-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .file-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-left: 12px;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            color: var(--apple-text-primary);
+            font-size: 16px;
+        }
+        
+        .file-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--apple-text-secondary);
+        }
+        
+        /* Apple-style badges */
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--apple-light-gray);
+            color: var(--apple-text-primary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        /* Header section */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--apple-border);
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--apple-text-primary);
+            letter-spacing: -0.5px;
+        }
+        
+        /* Circular theme toggle button - Apple style */
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--apple-surface);
+            box-shadow: var(--apple-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--apple-border);
+        }
+        
+        .theme-toggle:hover {
+            box-shadow: var(--apple-shadow-hover);
+            transform: scale(1.05);
+        }
+        
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        .theme-toggle svg {
             width: 20px;
             height: 20px;
-            display: inline-block;
-            margin-right: 8px;
-        }
-
-        /* Custom scrollbar for dark mode */
-        .scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--background));
+            color: var(--apple-blue);
+            transition: all 0.3s ease;
         }
         
-        .scrollbar::-webkit-scrollbar {
-            width: 8px;
+        /* Breadcrumb section */
+        .breadcrumb-section {
+            margin-bottom: 24px;
         }
         
-        .scrollbar::-webkit-scrollbar-track {
-            background: hsl(var(--background));
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: var(--apple-radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1px solid var(--apple-border);
+            background: var(--apple-surface);
+            color: var(--apple-text-primary);
+            cursor: pointer;
         }
         
-        .scrollbar::-webkit-scrollbar-thumb {
-            background: hsl(var(--muted-foreground));
-            border-radius: 4px;
+        .btn:hover {
+            background: var(--apple-light-gray);
+            transform: translateY(-1px);
+            box-shadow: var(--apple-shadow);
+        }
+        
+        /* Empty directory styling */
+        .empty-directory {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-directory svg {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            color: var(--apple-gray);
+            opacity: 0.6;
+        }
+        
+        .empty-directory h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--apple-text-primary);
+        }
+        
+        .empty-directory p {
+            color: var(--apple-text-secondary);
+            font-size: 16px;
+        }
+        
+        /* Footer */
+        .footer-section {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--apple-border);
+            text-align: center;
+            font-size: 14px;
+            color: var(--apple-text-secondary);
+        }
+        
+        .footer-section a {
+            color: var(--apple-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .footer-section a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header-section {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            
+            .file-meta {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-end;
+            }
+            
+            .file-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+        
+        /* Smooth animations */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
         }
     </style>
 </head>
-<body class="min-h-screen bg-background text-foreground">
-    <div class="container mx-auto p-6 max-w-6xl">
+<body>
+    <div class="container">
         <!-- Header with theme toggle -->
-        <header class="flex items-center justify-between mb-6 pb-4 border-b border-border">
-            <div class="flex items-center space-x-4">
-                <svg class="file-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <header class="header-section">
+            <div class="header-title">
+                <svg class="file-icon" style="color: var(--apple-blue); width: 32px; height: 32px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 7v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V7M4 7V4c0-2.21 1.79-4 4-4h8c2.21 0 4 1.79 4 4v3M4 7h16M9 11h6"/>
                 </svg>
-                <h1 class="text-3xl font-bold text-foreground">{{ current_path }}</h1>
+                <h1>{{ current_path }}</h1>
             </div>
             
             <button 
                 id="theme-toggle" 
-                class="btn-outline btn-icon"
+                class="theme-toggle"
                 onclick="toggleTheme()"
                 aria-label="Toggle theme"
             >
-                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="5"/>
                     <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
                 </svg>
-                <svg id="moon-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                 </svg>
             </button>
@@ -112,10 +332,10 @@
 
         <!-- Breadcrumb Navigation -->
         {% if parent_path.len() != 0 %}
-        <nav class="mb-6">
+        <nav class="breadcrumb-section">
             <div class="card">
-                <div class="p-4">
-                    <a href="{{ parent_path|urlencode }}" class="btn-outline btn-sm inline-flex items-center space-x-2">
+                <div style="padding: 16px;">
+                    <a href="{{ parent_path|urlencode }}" class="btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6"/>
                         </svg>
@@ -129,233 +349,191 @@
         <!-- Directory Contents -->
         <div class="card">
             {% if entries.len() != 0 %}
-            <div class="divide-y divide-border">
+            <div>
                 <!-- Directories Section -->
-                {% for entry in entries if entry.is_dir %}
-                <div class="p-4 hover:bg-muted transition-colors">
-                    <a href="{{ current_path|urlencode }}{% if !current_path.ends_with("/") %}/{% endif %}{{ entry.name|urlencode }}" class="flex items-center space-x-3 group">
-                        <svg class="file-icon text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                {% for entry in entries %}
+                {% if entry.is_dir %}
+                <div class="file-entry">
+                    <a href="{{ current_path|urlencode }}{% if !current_path.ends_with("/") %}/{% endif %}{{ entry.name|urlencode }}" class="file-link">
+                        <svg class="file-icon" style="color: var(--apple-blue);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/>
                         </svg>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between">
-                                <span class="text-foreground font-medium group-hover:text-primary transition-colors truncate">{{ entry.name }}/</span>
-                                <div class="flex items-center space-x-4 text-sm text-muted-foreground">
-                                    <span class="badge">Directory</span>
-                                    {% if entry.modified != "" %}
-                                    <span>{{ entry.modified }}</span>
-                                    {% endif %}
-                                </div>
+                        <div class="file-info">
+                            <span class="file-name">{{ entry.name }}/</span>
+                            <div class="file-meta">
+                                <span class="badge">Directory</span>
+                                {% if entry.modified != "" %}
+                                <span>{{ entry.modified }}</span>
+                                {% endif %}
                             </div>
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground group-hover:text-primary transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--apple-gray);">
                             <path d="m9 18 6-6-6-6"/>
                         </svg>
                     </a>
                 </div>
+                {% endif %}
                 {% endfor %}
 
                 <!-- Files Section -->
-                {% for entry in entries if !entry.is_dir %}
-                <div class="p-4 hover:bg-muted transition-colors">
-                    <a href="{{ current_path|urlencode }}{% if !current_path.ends_with("/") %}/{% endif %}{{ entry.name|urlencode }}" class="flex items-center space-x-3 group">
-                        <!-- File type icon -->
-                        {% if entry.extension == "pdf" %}
-                        <svg class="file-icon text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                {% for entry in entries %}
+                {% if !entry.is_dir %}
+                <div class="file-entry">
+                    <a href="/download{{ current_path }}{% if !current_path.ends_with("/") %}/{% endif %}{{ entry.name|urlencode }}" class="file-link" download="{{ entry.name }}">
+                        <!-- File type icon based on extension -->
+                        {% if entry.extension == "rs" %}
+                        <svg class="file-icon" style="color: #ff7b00;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14,2 14,8 20,8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                        {% elif entry.extension == "js" %}
+                        <svg class="file-icon" style="color: #f7df1e;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                        {% elif entry.extension == "ts" %}
+                        <svg class="file-icon" style="color: #3178c6;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                        {% elif entry.extension == "py" %}
+                        <svg class="file-icon" style="color: #3776ab;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                        {% elif entry.extension == "md" %}
+                        <svg class="file-icon" style="color: var(--apple-gray);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
                         </svg>
                         {% elif entry.extension == "jpg" %}
-                        <svg class="file-icon text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: #10b981;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
                             <circle cx="9" cy="9" r="2"/>
                             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                         </svg>
                         {% elif entry.extension == "jpeg" %}
-                        <svg class="file-icon text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: #10b981;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
                             <circle cx="9" cy="9" r="2"/>
                             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                         </svg>
                         {% elif entry.extension == "png" %}
-                        <svg class="file-icon text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: #10b981;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
                             <circle cx="9" cy="9" r="2"/>
                             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                         </svg>
                         {% elif entry.extension == "gif" %}
-                        <svg class="file-icon text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: #10b981;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
                             <circle cx="9" cy="9" r="2"/>
                             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                         </svg>
                         {% elif entry.extension == "svg" %}
-                        <svg class="file-icon text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: #10b981;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
                             <circle cx="9" cy="9" r="2"/>
                             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                         </svg>
-                        {% elif entry.extension == "txt" %}
-                        <svg class="file-icon text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        {% elif entry.extension == "pdf" %}
+                        <svg class="file-icon" style="color: #ef4444;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14,2 14,8 20,8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                        </svg>
-                        {% elif entry.extension == "md" %}
-                        <svg class="file-icon text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                        </svg>
-                        {% elif entry.extension == "rst" %}
-                        <svg class="file-icon text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
                         </svg>
                         {% elif entry.extension == "zip" %}
-                        <svg class="file-icon text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: #d97706;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="16" height="13" x="6" y="4" rx="2"/>
                             <path d="m22 7-8-4-8 4"/>
                             <path d="m2 7 8 4 8-4"/>
                             <path d="m2 7v10c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V7"/>
                         </svg>
                         {% elif entry.extension == "tar" %}
-                        <svg class="file-icon text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: #d97706;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="16" height="13" x="6" y="4" rx="2"/>
                             <path d="m22 7-8-4-8 4"/>
                             <path d="m2 7 8 4 8-4"/>
                             <path d="m2 7v10c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V7"/>
                         </svg>
                         {% elif entry.extension == "gz" %}
-                        <svg class="file-icon text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: #d97706;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="16" height="13" x="6" y="4" rx="2"/>
                             <path d="m22 7-8-4-8 4"/>
                             <path d="m2 7 8 4 8-4"/>
                             <path d="m2 7v10c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V7"/>
                         </svg>
                         {% elif entry.extension == "rar" %}
-                        <svg class="file-icon text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: #d97706;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="16" height="13" x="6" y="4" rx="2"/>
                             <path d="m22 7-8-4-8 4"/>
                             <path d="m2 7 8 4 8-4"/>
                             <path d="m2 7v10c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V7"/>
                         </svg>
-                        {% elif entry.extension == "rs" %}
-                        <svg class="file-icon text-purple-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="9" y1="15" x2="15" y2="15"/>
-                            <line x1="12" y1="13" x2="12" y2="17"/>
-                        </svg>
-                        {% elif entry.extension == "js" %}
-                        <svg class="file-icon text-purple-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="9" y1="15" x2="15" y2="15"/>
-                            <line x1="12" y1="13" x2="12" y2="17"/>
-                        </svg>
-                        {% elif entry.extension == "ts" %}
-                        <svg class="file-icon text-purple-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="9" y1="15" x2="15" y2="15"/>
-                            <line x1="12" y1="13" x2="12" y2="17"/>
-                        </svg>
-                        {% elif entry.extension == "py" %}
-                        <svg class="file-icon text-purple-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="9" y1="15" x2="15" y2="15"/>
-                            <line x1="12" y1="13" x2="12" y2="17"/>
-                        </svg>
-                        {% elif entry.extension == "go" %}
-                        <svg class="file-icon text-purple-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="9" y1="15" x2="15" y2="15"/>
-                            <line x1="12" y1="13" x2="12" y2="17"/>
-                        </svg>
-                        {% elif entry.extension == "java" %}
-                        <svg class="file-icon text-purple-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="9" y1="15" x2="15" y2="15"/>
-                            <line x1="12" y1="13" x2="12" y2="17"/>
-                        </svg>
                         {% else %}
-                        <svg class="file-icon text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="file-icon" style="color: var(--apple-gray);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14,2 14,8 20,8"/>
                         </svg>
                         {% endif %}
                         
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between">
-                                <span class="text-foreground group-hover:text-primary transition-colors truncate">{{ entry.name }}</span>
-                                <div class="flex items-center space-x-4 text-sm text-muted-foreground">
-                                    {% if entry.extension != "" %}
-                                    <span class="badge">{{ entry.extension|upper }}</span>
-                                    {% endif %}
-                                    {% if entry.size != "" %}
-                                    <span>{{ entry.size }}</span>
-                                    {% endif %}
-                                    {% if entry.modified != "" %}
-                                    <span>{{ entry.modified }}</span>
-                                    {% endif %}
-                                </div>
+                        <div class="file-info">
+                            <span class="file-name">{{ entry.name }}</span>
+                            <div class="file-meta">
+                                {% if entry.extension != "" %}
+                                <span class="badge">{{ entry.extension|upper }}</span>
+                                {% endif %}
+                                {% if entry.size != "" %}
+                                <span>{{ entry.size }}</span>
+                                {% endif %}
+                                {% if entry.modified != "" %}
+                                <span>{{ entry.modified }}</span>
+                                {% endif %}
                             </div>
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground group-hover:text-primary transition-colors">
-                            <path d="m9 18 6-6-6-6"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--apple-gray);">
+                            <path d="M12 15v-6m-3 3 3 3 3-3"/>
+                            <path d="M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/>
+                            <path d="M2 7l.621-2.485A2 2 0 0 1 4.561 3h14.878a2 2 0 0 1 1.94 1.515L22 7"/>
                         </svg>
                     </a>
                 </div>
+                {% endif %}
                 {% endfor %}
             </div>
             {% else %}
-            <div class="p-8 text-center">
-                <svg class="mx-auto h-12 w-12 text-muted-foreground mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="empty-directory">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/>
                 </svg>
-                <h3 class="text-lg font-medium text-foreground mb-2">Empty Directory</h3>
-                <p class="text-muted-foreground">This directory contains no files or subdirectories.</p>
+                <h3>Empty Directory</h3>
+                <p>This directory contains no files or subdirectories.</p>
             </div>
             {% endif %}
         </div>
 
         <!-- Footer -->
-        <footer class="mt-8 pt-4 border-t border-border text-center text-sm text-muted-foreground">
-            <p>Powered by <strong><a href="https://github.com/Akagi201/serve-rs" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">serve-rs</a></strong> - A minimal static file server</p>
+        <footer class="footer-section">
+            <p>Powered by <strong><a href="https://github.com/Akagi201/serve-rs" target="_blank" rel="noopener noreferrer">serve-rs</a></strong> - A minimal static file server</p>
         </footer>
     </div>
-
-    <!-- BasecoatUI JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.2.8/dist/js/all.min.js" defer></script>
     
     <!-- Theme toggle script -->
     <script>
-        // Theme toggle functionality
+        // Theme toggle functionality using BasecoatUI
         function toggleTheme() {
             const html = document.documentElement;
             const sunIcon = document.getElementById('sun-icon');
             const moonIcon = document.getElementById('moon-icon');
             
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
                 localStorage.setItem('theme', 'light');
             } else {
-                html.classList.add('dark');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
+                html.setAttribute('data-theme', 'dark');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -369,13 +547,13 @@
             const moonIcon = document.getElementById('moon-icon');
             
             if (storedTheme === 'dark' || (!storedTheme && systemDark)) {
-                html.classList.add('dark');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
+                html.setAttribute('data-theme', 'dark');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
             } else {
-                html.classList.remove('dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
+                html.setAttribute('data-theme', 'light');
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
             }
         }
 
