@@ -5,56 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index of {{ current_path }}</title>
     
-    <!-- BasecoatUI CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.2.8/dist/basecoat.cdn.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Initialize theme before rendering -->
+    <script>
+        // Initialize theme immediately to prevent flash
+        (function() {
+            const storedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Use dark theme if explicitly set to dark OR if no preference and system prefers dark
+            if (storedTheme === 'dark' || (!storedTheme && systemDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                // Use light theme if explicitly set to light OR if no preference and system prefers light
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
     
     <style>
-        /* Custom theme variables */
-        :root {
-            --background: 0 0% 100%;
-            --foreground: 222.2 84% 4.9%;
-            --card: 0 0% 100%;
-            --card-foreground: 222.2 84% 4.9%;
-            --popover: 0 0% 100%;
-            --popover-foreground: 222.2 84% 4.9%;
-            --primary: 222.2 47.4% 11.2%;
-            --primary-foreground: 210 40% 98%;
-            --secondary: 210 40% 96%;
-            --secondary-foreground: 222.2 84% 4.9%;
-            --muted: 210 40% 96%;
-            --muted-foreground: 215.4 16.3% 46.9%;
-            --accent: 210 40% 96%;
-            --accent-foreground: 222.2 84% 4.9%;
-            --destructive: 0 84.2% 60.2%;
-            --destructive-foreground: 210 40% 98%;
-            --border: 214.3 31.8% 91.4%;
-            --input: 214.3 31.8% 91.4%;
-            --ring: 222.2 84% 4.9%;
-            --radius: 0.5rem;
-        }
-
-        .dark {
-            --background: 222.2 84% 4.9%;
-            --foreground: 210 40% 98%;
-            --card: 222.2 84% 4.9%;
-            --card-foreground: 210 40% 98%;
-            --popover: 222.2 84% 4.9%;
-            --popover-foreground: 210 40% 98%;
-            --primary: 210 40% 98%;
-            --primary-foreground: 222.2 47.4% 11.2%;
-            --secondary: 217.2 32.6% 17.5%;
-            --secondary-foreground: 210 40% 98%;
-            --muted: 217.2 32.6% 17.5%;
-            --muted-foreground: 215 20.2% 65.1%;
-            --accent: 217.2 32.6% 17.5%;
-            --accent-foreground: 210 40% 98%;
-            --destructive: 0 62.8% 30.6%;
-            --destructive-foreground: 210 40% 98%;
-            --border: 217.2 32.6% 17.5%;
-            --input: 217.2 32.6% 17.5%;
-            --ring: 212.7 26.8% 83.9%;
-        }
-
         /* File type icons */
         .file-icon {
             width: 20px;
@@ -63,40 +34,62 @@
             margin-right: 8px;
         }
 
-        /* Custom scrollbar for dark mode */
-        .scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--background));
+        /* Button styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
         }
         
-        .scrollbar::-webkit-scrollbar {
-            width: 8px;
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            background-color: transparent;
+            color: #374151;
         }
         
-        .scrollbar::-webkit-scrollbar-track {
-            background: hsl(var(--background));
+        .btn-outline:hover {
+            background-color: #f3f4f6;
         }
         
-        .scrollbar::-webkit-scrollbar-thumb {
-            background: hsl(var(--muted-foreground));
-            border-radius: 4px;
+        .dark .btn-outline {
+            border-color: #4b5563;
+            color: #d1d5db;
+        }
+        
+        .dark .btn-outline:hover {
+            background-color: #374151;
+        }
+
+        /* Badge styles */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
     </style>
 </head>
-<body class="min-h-screen bg-background text-foreground">
+<body class="min-h-screen bg-gray-50 dark:bg-slate-900 text-black dark:text-white">
     <div class="container mx-auto p-6 max-w-6xl">
         <!-- Header with theme toggle -->
-        <header class="flex items-center justify-between mb-6 pb-4 border-b border-border">
+        <header class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center space-x-4">
-                <svg class="file-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="file-icon text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 7v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V7M4 7V4c0-2.21 1.79-4 4-4h8c2.21 0 4 1.79 4 4v3M4 7h16M9 11h6"/>
                 </svg>
-                <h1 class="text-3xl font-bold text-foreground">{{ current_path }}</h1>
+                <h1 class="text-3xl font-bold text-black dark:text-white">{{ current_path }}</h1>
             </div>
             
             <button 
                 id="theme-toggle" 
-                class="btn-outline btn-icon"
+                class="btn btn-outline"
                 onclick="toggleTheme()"
                 aria-label="Toggle theme"
             >
@@ -113,9 +106,9 @@
         <!-- Breadcrumb Navigation -->
         {% if parent_path.len() != 0 %}
         <nav class="mb-6">
-            <div class="card">
+            <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
                 <div class="p-4">
-                    <a href="{{ parent_path|urlencode }}" class="btn-outline btn-sm inline-flex items-center space-x-2">
+                    <a href="{{ parent_path|urlencode }}" class="btn btn-outline inline-flex items-center space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6"/>
                         </svg>
@@ -127,28 +120,28 @@
         {% endif %}
 
         <!-- Directory Contents -->
-        <div class="card">
+        <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
             {% if entries.len() != 0 %}
-            <div class="divide-y divide-border">
+            <div class="divide-y divide-gray-200 dark:divide-gray-700">
                 <!-- Directories Section -->
                 {% for entry in entries if entry.is_dir %}
-                <div class="p-4 hover:bg-muted transition-colors">
+                <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <a href="{{ current_path|urlencode }}{% if !current_path.ends_with("/") %}/{% endif %}{{ entry.name|urlencode }}" class="flex items-center space-x-3 group">
                         <svg class="file-icon text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/>
                         </svg>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between">
-                                <span class="text-foreground font-medium group-hover:text-primary transition-colors truncate">{{ entry.name }}/</span>
-                                <div class="flex items-center space-x-4 text-sm text-muted-foreground">
-                                    <span class="badge">Directory</span>
+                                <span class="text-black dark:text-white font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">{{ entry.name }}/</span>
+                                <div class="flex items-center space-x-4 text-sm text-gray-700 dark:text-gray-300">
+                                    <span class="badge bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">Directory</span>
                                     {% if entry.modified != "" %}
                                     <span>{{ entry.modified }}</span>
                                     {% endif %}
                                 </div>
                             </div>
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground group-hover:text-primary transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                             <path d="m9 18 6-6-6-6"/>
                         </svg>
                     </a>
@@ -157,7 +150,7 @@
 
                 <!-- Files Section -->
                 {% for entry in entries if !entry.is_dir %}
-                <div class="p-4 hover:bg-muted transition-colors">
+                <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <a href="{{ current_path|urlencode }}{% if !current_path.ends_with("/") %}/{% endif %}{{ entry.name|urlencode }}" class="flex items-center space-x-3 group">
                         <!-- File type icon -->
                         {% if entry.extension == "pdf" %}
@@ -298,10 +291,10 @@
                         
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between">
-                                <span class="text-foreground group-hover:text-primary transition-colors truncate">{{ entry.name }}</span>
-                                <div class="flex items-center space-x-4 text-sm text-muted-foreground">
+                                <span class="text-black dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">{{ entry.name }}</span>
+                                <div class="flex items-center space-x-4 text-sm text-black dark:text-gray-400">
                                     {% if entry.extension != "" %}
-                                    <span class="badge">{{ entry.extension|upper }}</span>
+                                    <span class="badge bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">{{ entry.extension|upper }}</span>
                                     {% endif %}
                                     {% if entry.size != "" %}
                                     <span>{{ entry.size }}</span>
@@ -312,7 +305,7 @@
                                 </div>
                             </div>
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground group-hover:text-primary transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                             <path d="m9 18 6-6-6-6"/>
                         </svg>
                     </a>
@@ -321,73 +314,93 @@
             </div>
             {% else %}
             <div class="p-8 text-center">
-                <svg class="mx-auto h-12 w-12 text-muted-foreground mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/>
                 </svg>
-                <h3 class="text-lg font-medium text-foreground mb-2">Empty Directory</h3>
-                <p class="text-muted-foreground">This directory contains no files or subdirectories.</p>
+                <h3 class="text-lg font-medium text-black dark:text-white mb-2">Empty Directory</h3>
+                <p class="text-black dark:text-gray-400">This directory contains no files or subdirectories.</p>
             </div>
             {% endif %}
         </div>
 
         <!-- Footer -->
-        <footer class="mt-8 pt-4 border-t border-border text-center text-sm text-muted-foreground">
-            <p>Powered by <strong><a href="https://github.com/Akagi201/serve-rs" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">serve-rs</a></strong> - A minimal static file server</p>
+        <footer class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-black dark:text-gray-400">
+            <p>Powered by <strong><a href="https://github.com/Akagi201/serve-rs" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">serve-rs</a></strong> - A minimal static file server</p>
         </footer>
     </div>
 
-    <!-- BasecoatUI JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.2.8/dist/js/all.min.js" defer></script>
+    <!-- Tailwind CSS JavaScript (not needed as we're using the CDN version) -->
     
     <!-- Theme toggle script -->
     <script>
-        // Theme toggle functionality
-        function toggleTheme() {
-            const html = document.documentElement;
-            const sunIcon = document.getElementById('sun-icon');
-            const moonIcon = document.getElementById('moon-icon');
-            
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-                localStorage.setItem('theme', 'dark');
+        // Global theme management
+        (function() {
+            function getThemePreference() {
+                const storedTheme = localStorage.getItem('theme');
+                if (storedTheme) {
+                    return storedTheme; // 'light' or 'dark'
+                }
+                
+                // If no stored preference, use system preference
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             }
-        }
 
-        // Initialize theme from localStorage or system preference
-        function initTheme() {
-            const storedTheme = localStorage.getItem('theme');
-            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const html = document.documentElement;
-            const sunIcon = document.getElementById('sun-icon');
-            const moonIcon = document.getElementById('moon-icon');
-            
-            if (storedTheme === 'dark' || (!storedTheme && systemDark)) {
-                html.classList.add('dark');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            } else {
-                html.classList.remove('dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
+            function applyTheme(theme) {
+                const html = document.documentElement;
+                const sunIcon = document.getElementById('sun-icon');
+                const moonIcon = document.getElementById('moon-icon');
+                
+                console.log('Applying theme:', theme); // Debug
+                
+                if (theme === 'dark') {
+                    html.classList.add('dark');
+                    if (sunIcon) sunIcon.classList.add('hidden');
+                    if (moonIcon) moonIcon.classList.remove('hidden');
+                } else {
+                    html.classList.remove('dark');
+                    if (sunIcon) sunIcon.classList.remove('hidden');
+                    if (moonIcon) moonIcon.classList.add('hidden');
+                }
             }
-        }
 
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-            if (!localStorage.getItem('theme')) {
+            // Theme toggle functionality - expose globally
+            window.toggleTheme = function() {
+                const currentTheme = getThemePreference();
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                console.log('Toggling from', currentTheme, 'to', newTheme); // Debug
+                
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            };
+
+            // Initialize theme from localStorage or system preference
+            function initTheme() {
+                const theme = getThemePreference();
+                console.log('Initializing theme:', theme); // Debug
+                applyTheme(theme);
+            }
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                // Only auto-update if user hasn't set an explicit preference
+                if (!localStorage.getItem('theme')) {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    console.log('System theme changed to:', newTheme); // Debug
+                    applyTheme(newTheme);
+                }
+            });
+
+            // Initialize immediately if possible
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initTheme);
+            } else {
                 initTheme();
             }
-        });
-
-        // Initialize theme on page load
-        document.addEventListener('DOMContentLoaded', initTheme);
+            
+            // Also initialize when DOM is ready (redundant but safe)
+            document.addEventListener('DOMContentLoaded', initTheme);
+        })();
     </script>
 </body>
 </html>

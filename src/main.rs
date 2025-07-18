@@ -1,12 +1,15 @@
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 use clap::Parser;
 use config::Cli;
 use eyre::Result;
-use handlers::{render_index, AppState};
+use handlers::{AppState, handle_directory_or_fallback, render_index_root};
 use log::init_log;
 use shadow_rs::shadow;
 use tokio::net::TcpListener;
-use tower_http::{services::ServeDir, trace::TraceLayer};
+use tower_http::{
+  cors::{Any, CorsLayer},
+  services::ServeDir,
+};
 use tracing::info;
 
 mod config;
@@ -22,14 +25,27 @@ async fn main() -> Result<()> {
     println!("{}", build::VERSION);
     return Ok(());
   }
-  init_log("info")?;
+
+  init_log(&cli.log_level)?;
   info!("cli: {:?}", cli);
 
-  let service = ServeDir::new(cli.root_dir.clone())
-    .not_found_service(get(render_index).with_state(AppState { root_dir: cli.root_dir.clone() }));
-  let app = Router::new().fallback_service(service).layer(TraceLayer::new_for_http());
-  let listener = TcpListener::bind(&cli.addr).await?;
+  let app_state = AppState { root_dir: cli.root_dir.clone(), hide_dotfiles: cli.hide_dotfiles };
 
+  // Create router with directory listing handler first, then static file serving
+  let serve_dir = ServeDir::new(&app_state.root_dir);
+
+  let mut app = Router::new()
+    .route("/", get(render_index_root))
+    .route("/{*path}", get(handle_directory_or_fallback))
+    .fallback_service(serve_dir)
+    .with_state(app_state);
+
+  // Add CORS layer if enabled
+  if cli.enable_cors {
+    app = app.layer(CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any));
+  }
+
+  let listener = TcpListener::bind(&cli.addr).await?;
   info!("Listening on: {}", listener.local_addr()?);
 
   axum::serve(listener, app).await?;
