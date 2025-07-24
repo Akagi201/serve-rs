@@ -2,7 +2,7 @@ use axum::{Router, routing::get};
 use clap::Parser;
 use config::Cli;
 use eyre::Result;
-use handlers::{AppState, handle_directory_or_fallback, render_index_root, serve_file};
+use handlers::{AppState, handle_file_or_directory, render_index_root, serve_file};
 use log::init_log;
 use shadow_rs::shadow;
 use tokio::net::TcpListener;
@@ -37,7 +37,7 @@ async fn main() -> Result<()> {
   let mut app = Router::new()
     .route("/", get(render_index_root))
     .route("/download/{*path}", get(serve_file))
-    .route("/{*path}", get(handle_directory_or_fallback))
+    .route("/{*path}", get(handle_file_or_directory))
     .fallback_service(serve_dir)
     .with_state(app_state);
 

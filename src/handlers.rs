@@ -111,30 +111,76 @@ pub async fn serve_file(
   (headers, content).into_response()
 }
 
-pub async fn handle_directory_or_fallback(
+pub async fn handle_file_or_directory(
   State(state): State<AppState>,
   Path(path): Path<String>,
 ) -> impl IntoResponse {
   let base_path = &state.root_dir;
   let decoded_path = match percent_decode(path.as_ref()).decode_utf8() {
     Ok(path) => path.to_string(),
-    Err(_) => return (StatusCode::NOT_FOUND, "").into_response(),
+    Err(_) => return (StatusCode::BAD_REQUEST, "Invalid path encoding").into_response(),
   };
 
   let target_path = base_path.join(&decoded_path);
 
   // Security check
   if !target_path.starts_with(base_path) {
-    return (StatusCode::NOT_FOUND, "").into_response();
+    return (StatusCode::FORBIDDEN, "Access denied").into_response();
+  }
+
+  // Check if target path exists
+  if !target_path.exists() {
+    return (StatusCode::NOT_FOUND, "File or directory not found").into_response();
   }
 
   // If it's a directory, render the directory listing
-  if target_path.exists() && target_path.is_dir() {
+  if target_path.is_dir() {
     return render_index_internal(state, decoded_path).await.into_response();
   }
 
-  // Otherwise, return NOT_FOUND to let the fallback serve the file
-  (StatusCode::NOT_FOUND, "").into_response()
+  // If it's a file, serve it directly
+  if target_path.is_file() {
+    return serve_static_file(&target_path).await.into_response();
+  }
+
+  (StatusCode::NOT_FOUND, "Not found").into_response()
+}
+
+async fn serve_static_file(file_path: &std::path::Path) -> impl IntoResponse {
+  // Read file content
+  let content = match std::fs::read(file_path) {
+    Ok(content) => content,
+    Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to read file").into_response(),
+  };
+
+  // Create headers
+  let mut headers = HeaderMap::new();
+
+  // Determine content type based on file extension
+  let content_type = match file_path.extension().and_then(|ext| ext.to_str()) {
+    Some("txt") => "text/plain",
+    Some("html") => "text/html",
+    Some("css") => "text/css",
+    Some("js") => "application/javascript",
+    Some("json") => "application/json",
+    Some("pdf") => "application/pdf",
+    Some("png") => "image/png",
+    Some("jpg") | Some("jpeg") => "image/jpeg",
+    Some("gif") => "image/gif",
+    Some("svg") => "image/svg+xml",
+    Some("zip") => "application/zip",
+    Some("tar") => "application/x-tar",
+    Some("gz") => "application/gzip",
+    Some("rar") => "application/x-rar-compressed",
+    Some("md") => "text/markdown",
+    Some("rs") => "text/plain",
+    Some("toml") => "text/plain",
+    _ => "application/octet-stream",
+  };
+
+  headers.insert(header::CONTENT_TYPE, content_type.parse().expect("Valid content type header"));
+
+  (headers, content).into_response()
 }
 
 async fn render_index_internal(state: AppState, req_path: String) -> impl IntoResponse {
