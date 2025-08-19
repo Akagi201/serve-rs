@@ -47,6 +47,22 @@ pub async fn render_index_root(State(state): State<AppState>) -> impl IntoRespon
   render_index_internal(state, "".to_string()).await
 }
 
+pub async fn health_check(State(state): State<AppState>) -> impl IntoResponse {
+  let health_file_path = state.root_dir.join("health");
+
+  // If health file exists, serve it
+  if health_file_path.exists() && health_file_path.is_file() {
+    return serve_static_file(&health_file_path).await.into_response();
+  }
+
+  // Otherwise return default healthy status
+  let json_response = r#"{"status":"healthy"}"#;
+  let mut headers = HeaderMap::new();
+  headers.insert(header::CONTENT_TYPE, "application/json".parse().expect("Valid content type"));
+
+  (StatusCode::OK, headers, json_response).into_response()
+}
+
 pub async fn serve_file(
   State(state): State<AppState>,
   Path(path): Path<String>,
