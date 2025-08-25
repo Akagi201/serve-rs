@@ -97,39 +97,43 @@ pub async fn serve_file(
     Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to read file").into_response(),
   };
 
-  // Get filename for Content-Disposition header
-  let filename = target_path.file_name().and_then(|name| name.to_str()).unwrap_or("download");
-
-  // Create headers
-  let mut headers = HeaderMap::new();
-  headers.insert(
-    header::CONTENT_DISPOSITION,
-    format!("attachment; filename=\"{filename}\"")
-      .parse()
-      .expect("Valid content disposition header"),
-  );
-
-  // Determine content type based on file extension
-  let content_type = match target_path.extension().and_then(|ext| ext.to_str()) {
-    Some("txt") => "text/plain",
-    Some("html") => "text/html",
-    Some("css") => "text/css",
-    Some("js") => "application/javascript",
-    Some("json") => "application/json",
-    Some("pdf") => "application/pdf",
-    Some("png") => "image/png",
-    Some("jpg") | Some("jpeg") => "image/jpeg",
-    Some("gif") => "image/gif",
-    Some("svg") => "image/svg+xml",
-    Some("zip") => "application/zip",
-    Some("tar") => "application/x-tar",
-    Some("gz") => "application/gzip",
-    Some("rar") => "application/x-rar-compressed",
+  // Determine content type and whether to show inline or download
+  let ext = target_path.extension().and_then(|ext| ext.to_str()).unwrap_or("").to_lowercase();
+  let is_text =
+    matches!(ext.as_str(), "txt" | "html" | "css" | "js" | "json" | "xml" | "md" | "toml" | "rs");
+  let content_type = match ext.as_str() {
+    "txt" => "text/plain",
+    "html" => "text/html",
+    "css" => "text/css",
+    "js" => "application/javascript",
+    "json" => "application/json",
+    "xml" => "application/xml",
+    "md" => "text/markdown",
+    "toml" => "text/plain",
+    "rs" => "text/plain",
+    "pdf" => "application/pdf",
+    "png" => "image/png",
+    "jpg" | "jpeg" => "image/jpeg",
+    "gif" => "image/gif",
+    "svg" => "image/svg+xml",
+    "zip" => "application/zip",
+    "tar" => "application/x-tar",
+    "gz" => "application/gzip",
+    "rar" => "application/x-rar-compressed",
     _ => "application/octet-stream",
   };
-
+  let mut headers = HeaderMap::new();
   headers.insert(header::CONTENT_TYPE, content_type.parse().expect("Valid content type header"));
-
+  if !is_text {
+    // Media files: download
+    let filename = target_path.file_name().and_then(|name| name.to_str()).unwrap_or("download");
+    headers.insert(
+      header::CONTENT_DISPOSITION,
+      format!("attachment; filename=\"{filename}\"")
+        .parse()
+        .expect("Valid content disposition header"),
+    );
+  }
   (headers, content).into_response()
 }
 
@@ -180,33 +184,43 @@ async fn serve_static_file(file_path: &std::path::Path) -> impl IntoResponse {
     Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to read file").into_response(),
   };
 
-  // Create headers
-  let mut headers = HeaderMap::new();
-
-  // Determine content type based on file extension
-  let content_type = match file_path.extension().and_then(|ext| ext.to_str()) {
-    Some("txt") => "text/plain",
-    Some("html") => "text/html",
-    Some("css") => "text/css",
-    Some("js") => "application/javascript",
-    Some("json") => "application/json",
-    Some("pdf") => "application/pdf",
-    Some("png") => "image/png",
-    Some("jpg") | Some("jpeg") => "image/jpeg",
-    Some("gif") => "image/gif",
-    Some("svg") => "image/svg+xml",
-    Some("zip") => "application/zip",
-    Some("tar") => "application/x-tar",
-    Some("gz") => "application/gzip",
-    Some("rar") => "application/x-rar-compressed",
-    Some("md") => "text/markdown",
-    Some("rs") => "text/plain",
-    Some("toml") => "text/plain",
+  // Determine content type and whether to show inline or download
+  let ext = file_path.extension().and_then(|ext| ext.to_str()).unwrap_or("").to_lowercase();
+  let is_text =
+    matches!(ext.as_str(), "txt" | "html" | "css" | "js" | "json" | "xml" | "md" | "toml" | "rs");
+  let content_type = match ext.as_str() {
+    "txt" => "text/plain",
+    "html" => "text/html",
+    "css" => "text/css",
+    "js" => "application/javascript",
+    "json" => "application/json",
+    "xml" => "application/xml",
+    "md" => "text/markdown",
+    "toml" => "text/plain",
+    "rs" => "text/plain",
+    "pdf" => "application/pdf",
+    "png" => "image/png",
+    "jpg" | "jpeg" => "image/jpeg",
+    "gif" => "image/gif",
+    "svg" => "image/svg+xml",
+    "zip" => "application/zip",
+    "tar" => "application/x-tar",
+    "gz" => "application/gzip",
+    "rar" => "application/x-rar-compressed",
     _ => "application/octet-stream",
   };
-
+  let mut headers = HeaderMap::new();
   headers.insert(header::CONTENT_TYPE, content_type.parse().expect("Valid content type header"));
-
+  if !is_text {
+    // Media files: download
+    let filename = file_path.file_name().and_then(|name| name.to_str()).unwrap_or("download");
+    headers.insert(
+      header::CONTENT_DISPOSITION,
+      format!("attachment; filename=\"{filename}\"")
+        .parse()
+        .expect("Valid content disposition header"),
+    );
+  }
   (headers, content).into_response()
 }
 
