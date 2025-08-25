@@ -44,7 +44,13 @@ pub struct AppState {
 }
 
 pub async fn render_index_root(State(state): State<AppState>) -> impl IntoResponse {
-  render_index_internal(state, "".to_string()).await
+  // Check if index.html exists in root directory
+  let index_path = state.root_dir.join("index.html");
+  if index_path.exists() && index_path.is_file() {
+    return serve_static_file(&index_path).await.into_response();
+  }
+
+  render_index_internal(state, "".to_string()).await.into_response()
 }
 
 pub async fn health_check(State(state): State<AppState>) -> impl IntoResponse {
@@ -149,8 +155,13 @@ pub async fn handle_file_or_directory(
     return (StatusCode::NOT_FOUND, "File or directory not found").into_response();
   }
 
-  // If it's a directory, render the directory listing
+  // If it's a directory, check for index.html first
   if target_path.is_dir() {
+    let index_path = target_path.join("index.html");
+    if index_path.exists() && index_path.is_file() {
+      return serve_static_file(&index_path).await.into_response();
+    }
+    // If no index.html, render the directory listing
     return render_index_internal(state, decoded_path).await.into_response();
   }
 

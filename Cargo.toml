@@ -8,7 +8,7 @@ askama = "0.14.0"
 axum = "0.8.4"
 clap = { version = "4.5.45", features = ["derive"] }
 eyre = "0.6.12"
-percent-encoding = "2.3.1"
+percent-encoding = "2.3.2"
 shadow-rs = "1.2.1"
 tokio = { version = "1.47.1", features = ["full"] }
 tower-http = { version = "0.6.6", features = ["fs", "trace", "cors"] }
